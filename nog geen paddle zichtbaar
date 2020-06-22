@@ -1,0 +1,181 @@
+import arcade
+
+SCREEN_WIDTH = 800
+SCREEN_HEIGHT = 600
+SCREEN_TITLE = "Starting Template"
+
+
+
+class Paddle1():
+
+    def __init__(self):
+        self.position_x = None
+        self.position_y= None
+        self.width = None
+        self.height = None
+        self.color = None
+
+        
+        self.delta_y = None
+
+    def setup(self, position_x, position_y, width, height, color, delta_y):
+        self.position_x = position_x
+        self.position_y= position_y
+        self.width = width
+        self.height = height
+        self.color = color
+
+        
+        self.delta_y = delta_y
+
+    def on_draw(self):
+        arcade.draw_rectangle_filled (self.postion_x, self.position_y, self.width, self.height, self.color)
+        
+
+
+
+    def on_update(self, delta_time ):
+        self.position_y = self.position_y + self.delta_y
+
+       
+
+
+
+
+
+
+class ScoreBoard():
+    
+    def __init__(self):
+        self.position_x = None
+        self.position_y= None
+        self.font_size= None
+        self.color = None
+
+        self.score = None 
+
+    def setup(self, position_x, position_y, font_size, color, score):
+        self.position_x = position_x
+        self.position_y= position_y
+        self.font_size= font_size
+        self.color = color
+
+        self.score = score
+
+    def on_draw(self):
+        arcade.draw_text(f"Score: {self.score}", self.position_x, self.position_y, self.color, self.font_size)
+
+
+
+
+class Ball():
+
+    def __init__(self):
+        self.position_x = None
+        self.position_y= None
+        self.radius = None
+        self.color = None
+
+        self.delta_x = None
+        self.delta_y = None
+
+    def setup(self, position_x, position_y, radius, color,delta_x, delta_y):
+        self.position_x = position_x
+        self.position_y= position_y
+        self.radius = radius
+        self.color = color
+
+        self.delta_x = delta_x
+        self.delta_y = delta_y
+
+    def on_draw(self):
+        arcade.draw_circle_filled(self.position_x, self.position_y, self.radius, self.color)
+
+
+
+    def on_update(self, delta_time, score_board, scoreboard2):
+        self.position_x = self.position_x + self.delta_x
+        self.position_y = self.position_y + self.delta_y
+
+        if self.position_y + self.radius >= SCREEN_HEIGHT:
+            self.delta_y = self.delta_y * -1
+            
+
+        if self.position_x + self.radius >= SCREEN_WIDTH:
+            self.position_x = SCREEN_WIDTH//2
+            self.postion_y = SCREEN_HEIGHT//2
+            self.delta_x = self.delta_x * -1
+            score_board.score += 1
+
+            if self.position_x + self.radius >= SCREEN_WIDTH:
+            self.position_x = SCREEN_WIDTH//2
+            self.postion_y = SCREEN_HEIGHT//2
+            self.delta_x = self.delta_x * -1
+            score_board.score += 1
+
+          
+
+class MyGame(arcade.Window):
+
+
+    def __init__(self, width, height, title):
+        super().__init__(width, height, title)
+
+        arcade.set_background_color(arcade.color.AMAZON)
+
+        self.ball = None
+        self.score_board = None
+        self.paddle = None
+        self.paddle2 = None
+
+    def setup(self):
+        self.ball = Ball()
+        self.ball.setup(200, 200, 25, arcade.color.YELLOW, 5, 5)
+       
+        self.score_board = ScoreBoard ()
+        self.score_board.setup(SCREEN_WIDTH//2, SCREEN_HEIGHT - 20, 10, arcade.color.RUBY_RED, 0)
+        self.paddle = Paddle1()
+        self.paddle.setup (20, SCREEN_HEIGHT//2, 20,100, arcade.color.ORANGE, 0)
+
+        self.paddle2 = Paddle1()
+        self.paddle2.setup (780, SCREEN_HEIGHT//2, 20,100, arcade.color.ORANGE, 0)
+    
+    def on_draw(self):
+        arcade.start_render()
+
+        self.ball.on_draw()
+        self.score_board.on_draw ()
+        self.paddle.on_draw()
+        self.paddle2.on_draw()
+        
+    def on_update(self, delta_time):
+        self.ball.on_update(delta_time, self.score_board)
+        self.paddle.on_update(delta_time)
+        self.paddle2.on_update(delta_time)
+
+        
+
+    def on_key_press(self, key, key_modifiers):
+        pass
+
+    def on_key_release(self, key, key_modifiers):
+        pass
+
+    def on_mouse_motion(self, x, y, delta_x, delta_y):
+        pass
+
+    def on_mouse_press(self, x, y, button, key_modifiers):
+        pass
+
+    def on_mouse_release(self, x, y, button, key_modifiers):
+        pass
+
+
+def main():
+    game = MyGame(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
+    game.setup()
+    arcade.run()
+
+
+if __name__ == "__main__":
+    main()
